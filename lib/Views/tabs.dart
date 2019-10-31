@@ -28,7 +28,7 @@ class _TabsState extends State<Tabs> {
             bottom: TabBar(
               tabs: tabList.map((tab) => Tab(icon: tab.icon)).toList()
               ),
-              title: Text('Daily News')
+              title: Text(appTitle)
             ),
           body: TabBarView(
             children: tabList.cast(),
