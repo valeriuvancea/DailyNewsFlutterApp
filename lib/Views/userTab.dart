@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:daily_news/Models/userSettings.dart';
-import 'package:daily_news/Tabs/tabInterface.dart';
+import 'package:daily_news/Models/tabInterface.dart';
+import 'package:daily_news/globals.dart';
 
 class UserTab extends StatefulWidget implements TabInterface {
   UserTab({Key key}) : super(key: key);
@@ -15,12 +16,14 @@ class UserTab extends StatefulWidget implements TabInterface {
 
 class _UserTabState extends State<UserTab> {
   final List<ListTile> menuList = <ListTile>[
-    UserSettings.deleteAccount,
-    UserSettings.logOff
+    UserSettings.categories,
+    UserSettings.logOff,
+    UserSettings.deleteAccount
   ];
 
   @override
   Widget build(BuildContext context) {
+    globalContext=context;
     return ListView.separated(
         itemCount: menuList.length,
         itemBuilder: (context, index) {

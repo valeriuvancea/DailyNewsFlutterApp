@@ -1,11 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:daily_news/globals.dart';
-import 'dart:developer';
 import 'package:daily_news/Views/register.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
 import 'package:crypto/crypto.dart';
-import 'package:daily_news/Views/tabs.dart';
+import 'dart:convert';
 
 class Login extends StatefulWidget {
   Login({Key key}) : super(key: key);
@@ -18,89 +15,102 @@ class _LoginState extends State<Login> {
   String _password = "";
   final focusPassword = FocusNode();
   String _error = "";
-  bool _errorVisibility = false;
+  bool _shouldLoad = false;
 
   void login() {
-    log(_username);
-    log(_password);
-    fetchPost(_username, _password).then((response) {
-      if (response.statusCode == 200) {
-        Navigator.of(globalContext).pushReplacement(
-          MaterialPageRoute(builder: (globalContext) => Tabs()),
-        );
-      }
-      log(response.toString());
-    });
     setState(() {
-      _error = "error";
-      _errorVisibility = true;
+      _shouldLoad = true;
     });
-  }
+    final String url = serverApiURL +
+        '/users?username=' +
+        _username +
+        '&password=' +
+        md5.convert(utf8.encode(_password)).toString();
 
-  String inputWithNameandValueNotEmptyValidation(String name, String value) {
-    if (value.isEmpty) {
-      _errorVisibility = true;
-      return 'Please enter the ' + name;
-    }
-    return null;
+    sendHttpRequest(HttpRequestType.GET, url).then((response) {
+      String temporaryError = "";
+      if (response.statusCode == 200) {
+        loginWithUserId(json.decode(response.body)[0]["userId"]);
+      } else {
+        temporaryError = json.decode(response.body)["error"];
+      }
+      setState(() {
+        _error = temporaryError;
+        _shouldLoad = false;
+      });
+    }).catchError((_) {
+      setState(() {
+        _error =
+            "Network error. Please try again and make sure you have internet connection!";
+        _shouldLoad = false;
+      });
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     globalContext = context;
-    return Scaffold(
-      appBar: AppBar(title: Text(appTitle)),
-      body: Container(
-        padding: EdgeInsets.all(20.0),
-        child: Column(
-          children: <Widget>[
-            Text(
-              'Login',
-              style: TextStyle(fontSize: 20),
-            ),
-            Visibility(
-              child: Text(_error),
-              visible: _errorVisibility,
-            ),
-            TextFormField(
-                textInputAction: TextInputAction.next,
-                onFieldSubmitted: (x) {
-                  FocusScope.of(context).requestFocus(focusPassword);
-                },
-                onChanged: (username) => _username = username,
-                decoration: InputDecoration(labelText: "UserName"),
-                validator: (value) =>
-                    inputWithNameandValueNotEmptyValidation("UserName", value)),
-            TextFormField(
-                focusNode: focusPassword,
-                onChanged: (password) => _password = password,
-                onFieldSubmitted: (password) => login(),
-                obscureText: true,
-                decoration: InputDecoration(labelText: "Password")),
-            SizedBox(height: 10.0),
-            RaisedButton(child: Text("Login"), onPressed: () => login()),
-            SizedBox(height: 5.0),
-            InkWell(
-              child: Text(
-                "Register",
-                style: TextStyle(
-                    decoration: TextDecoration.underline, color: Colors.blue),
+    if (_shouldLoad) {
+      return getLoadContainer();
+    } else {
+      return Scaffold(
+        appBar: AppBar(title: Text(appTitle)),
+        body: Container(
+          padding: EdgeInsets.all(20.0),
+          child: Column(
+            children: <Widget>[
+              Text(
+                'Login',
+                style: TextStyle(fontSize: 25),
               ),
-              onTap: () => Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => Register()),
+              Visibility(
+                child: Text(
+                  "Error: " + _error,
+                  style:
+                      TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
+                ),
+                visible: _error.isNotEmpty,
               ),
-            )
-          ],
+              TextFormField(
+                  textInputAction: TextInputAction.next,
+                  onFieldSubmitted: (_) {
+                    FocusScope.of(context).requestFocus(focusPassword);
+                  },
+                  onChanged: (username) => _username = username,
+                  decoration: InputDecoration(labelText: "UserName")),
+              TextFormField(
+                  focusNode: focusPassword,
+                  onChanged: (password) => _password = password,
+                  onFieldSubmitted: (password) => login(),
+                  obscureText: true,
+                  decoration: InputDecoration(labelText: "Password")),
+              SizedBox(height: 10.0),
+              Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    RaisedButton(
+                      child: Text("Login"),
+                      onPressed: () => login(),
+                      color: Colors.lightBlue,
+                      textColor: Colors.white,
+                    ),
+                    SizedBox(width: 50.0),
+                    InkWell(
+                      child: Text(
+                        "Register",
+                        style: TextStyle(
+                            decoration: TextDecoration.underline,
+                            color: Colors.blue),
+                      ),
+                      onTap: () => Navigator.of(globalContext).push(
+                        MaterialPageRoute(builder: (context) => Register()),
+                      ),
+                    )
+                  ])
+            ],
+          ),
         ),
-      ),
-    );
+      );
+    }
   }
-}
-
-Future<http.Response> fetchPost(username, password) {
-  return http.get('https://daily-news-server.herokuapp.com/users?username=' +
-      username +
-      '&password=' +
-      md5.convert(utf8.encode(password)).toString());
 }

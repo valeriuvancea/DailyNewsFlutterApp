@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
-import 'dart:developer';
 import 'package:daily_news/globals.dart';
-import 'package:daily_news/Views/login.dart';
+import 'package:daily_news/Views/categories.dart';
 
 class UserSettings {
-  BuildContext context;
   static final ListTile deleteAccount = ListTile(
       title: new Center(
           child: Text('Delete account',
@@ -12,22 +10,40 @@ class UserSettings {
                   TextStyle(fontWeight: FontWeight.bold, color: Colors.red))),
       onTap: () {
         showAlertDialog(AlertDialog(
-          title: new Text("Are you sure you want to delete your account?"),
-          content: new Text("You are about to delete your account which will also delete all your favourites news." 
-          +"This action is not reversible!"),
+          title: Text("Are you sure you want to delete your account?"),
+          content: Text(
+              "You are about to delete your account which will also delete all your favourites news." +
+                  "This action is not reversible!"),
           actions: <Widget>[
-            // usually buttons at the bottom of the dialog
-            new FlatButton(
-              child: new Text("Yes"),
+            FlatButton(
+              child: Text("Yes"),
               onPressed: () {
-                log("yes");
-                Navigator.of(globalContext).pop();
+                sendHttpRequest(HttpRequestType.DELETE,
+                        serverApiURL + "/users/$userId")
+                    .then((request) {
+                  if (request.statusCode == 200) {
+                    logOffAndClearStorageFile();
+                  } else {
+                    Navigator.of(globalContext).pop();
+                    showAlertDialog(AlertDialog(
+                        title: Text("Unable to delete user!"),
+                        content: Text("Due to a server error, the user was not deleted!"),
+                        actions: <Widget>[
+                          FlatButton(
+                              child: Text("OK"),
+                              onPressed: () {
+                                Navigator.of(globalContext).pop();
+                              })
+                        ]));
+                  }
+                }).catchError((_) {
+                  showNetworkErrorDialog();
+                });
               },
             ),
-            new FlatButton(
-              child: new Text("No"),
+            FlatButton(
+              child: Text("No"),
               onPressed: () {
-                log("no");
                 Navigator.of(globalContext).pop();
               },
             ),
@@ -37,14 +53,19 @@ class UserSettings {
 
   static final ListTile logOff = ListTile(
       title: new Center(
-          child: Text('Log off',
-              style:
-                  TextStyle(fontWeight: FontWeight.bold))),
+          child:
+              Text('Log off', style: TextStyle(fontWeight: FontWeight.bold))),
       onTap: () {
-        Navigator.of(globalContext).pushReplacement(
-          MaterialPageRoute(builder: (globalContext) => Login()),
-        );
+        logOffAndClearStorageFile();
       });
 
-      
+  static final ListTile categories = ListTile(
+      title: new Center(
+          child: Text('Categories',
+              style: TextStyle(fontWeight: FontWeight.bold))),
+      onTap: () {
+        Navigator.of(globalContext).push(
+          MaterialPageRoute(builder: (globalContext) => Categories()),
+        );
+      });
 }

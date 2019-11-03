@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:daily_news/Tabs/userTab.dart';
-import 'package:daily_news/Tabs/tabInterface.dart';
-import 'package:daily_news/Tabs/newsTab.dart';
-import 'package:daily_news/Tabs/bookmarksTab.dart';
+import 'package:daily_news/Views/userTab.dart';
+import 'package:daily_news/Models/tabInterface.dart';
+import 'package:daily_news/Views/newsTab.dart';
 import 'package:daily_news/globals.dart';
 
 class Tabs extends StatefulWidget {
@@ -14,7 +13,6 @@ class Tabs extends StatefulWidget {
 class _TabsState extends State<Tabs> {
   final List<TabInterface> tabList = <TabInterface>[
     new NewsTab(),
-    new BookmarksTab(),
     new UserTab()
   ];
 
