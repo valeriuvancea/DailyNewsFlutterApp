@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:developer';
 import 'package:daily_news/globals.dart';
+import 'package:daily_news/Views/login.dart';
 
 class UserSettings {
   BuildContext context;
@@ -40,7 +41,9 @@ class UserSettings {
               style:
                   TextStyle(fontWeight: FontWeight.bold))),
       onTap: () {
-        log('Log Off Pressed.');
+        Navigator.of(globalContext).pushReplacement(
+          MaterialPageRoute(builder: (globalContext) => Login()),
+        );
       });
 
       
