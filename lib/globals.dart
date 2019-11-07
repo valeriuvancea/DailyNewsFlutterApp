@@ -9,7 +9,7 @@ import 'package:daily_news/Views/tabs.dart';
 
 BuildContext globalContext;
 final String appTitle = "Daily News";
-final String serverApiURL = "https://daily-news-server.herokuapp.com";
+final String serverApiURL = "https://dailynews.azurewebsites.net/api";
 int userId = -1;
 
 enum HttpRequestType { GET, POST, DELETE }
