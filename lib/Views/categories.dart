@@ -60,23 +60,32 @@ class _CategoriesState extends State<Categories> {
         return Scaffold(
             appBar: AppBar(title: Text("Categories")),
             body: ListView.separated(
-                itemCount: _categoryList.length,
+                itemCount: _categoryList.length + 1,
                 itemBuilder: (context, index) {
-                  final item = _categoryList[index];
-
-                  return CheckboxListTile(
-                      title: Text(item.title),
-                      onChanged: (isCheked) {
-                        if (isCheked) {
-                          linkCategoryWithIdfromCurrentUser(item.categoryId);
-                        } else {
-                          unlinkCategoryWithIdfromCurrentUser(item.categoryId);
-                        }
-                        setState(() {
-                          item.isCategorySelected = isCheked;
-                        });
-                      },
-                      value: item.isCategorySelected);
+                  if (index < _categoryList.length) {
+                    final item = _categoryList[index];
+                    return CheckboxListTile(
+                        title: Text(item.title),
+                        onChanged: (isCheked) {
+                          if (isCheked) {
+                            linkCategoryWithIdfromCurrentUser(item.categoryId);
+                          } else {
+                            unlinkCategoryWithIdfromCurrentUser(
+                                item.categoryId);
+                          }
+                          setState(() {
+                            item.isCategorySelected = isCheked;
+                          });
+                        },
+                        value: item.isCategorySelected);
+                  } else {
+                    return RaisedButton(
+                      child: Text("Done"),
+                      onPressed: () => Navigator.of(globalContext).pop(),
+                      color: Colors.lightBlue,
+                      textColor: Colors.white,
+                    );
+                  }
                 },
                 separatorBuilder: (context, index) {
                   return Divider();
