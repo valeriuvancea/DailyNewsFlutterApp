@@ -79,12 +79,15 @@ class _CategoriesState extends State<Categories> {
                         },
                         value: item.isCategorySelected);
                   } else {
-                    return RaisedButton(
-                      child: Text("Done"),
-                      onPressed: () => Navigator.of(globalContext).pop(),
-                      color: Colors.lightBlue,
-                      textColor: Colors.white,
-                    );
+                    return Container(
+                        margin: EdgeInsets.symmetric(horizontal: 30),
+                        child: Align(
+                            child: RaisedButton(
+                              child: Text("Done"),
+                              onPressed: () => Navigator.of(globalContext).pop(),
+                              color: Colors.lightBlue,
+                              textColor: Colors.white
+                        )));
                   }
                 },
                 separatorBuilder: (context, index) {
