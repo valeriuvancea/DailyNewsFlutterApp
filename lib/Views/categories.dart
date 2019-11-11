@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:daily_news/globals.dart';
-import 'dart:developer';
 import 'package:daily_news/Models/category.dart';
 import 'dart:convert';
 
@@ -25,7 +24,6 @@ class _CategoriesState extends State<Categories> {
         List<Category> temporaryList = new List<Category>();
         List<dynamic> responseList = json.decode(response.body);
         responseList.forEach((item) {
-          log(item.toString());
           temporaryList.add(new Category(item));
         });
         setState(() {
@@ -112,7 +110,6 @@ class _CategoriesState extends State<Categories> {
         .then((response) {
       if (response.statusCode == 200) {
         Map<String, dynamic> responseMap = json.decode(response.body);
-        log(responseMap["rowsAffected"][0].toString());
         if (responseMap["rowsAffected"][0] == 1) {
           setState(() {
             _categoryList[_categoryList.indexWhere((category) {
