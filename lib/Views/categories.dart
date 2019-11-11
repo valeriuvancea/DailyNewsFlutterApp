@@ -19,7 +19,7 @@ class _CategoriesState extends State<Categories> {
   void initState() {
     super.initState();
     sendHttpRequest(
-            HttpRequestType.GET, serverApiURL + "/users/$userId/categories")
+            HttpRequestType.GET, serverApiURL + "/categories/$userId")
         .then((response) {
       if (response.statusCode == 200) {
         List<Category> temporaryList = new List<Category>();
