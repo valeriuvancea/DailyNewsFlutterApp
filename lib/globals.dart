@@ -72,7 +72,7 @@ Future<File> clearStorageFile() async {
   return file.writeAsString('');
 }
 
-void readUserId() async {
+Future<void> readUserId() async {
   try {
     final file = await getLocalFile();
     String contents = await file.readAsString();
